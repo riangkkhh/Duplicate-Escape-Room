@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>כדור הטונגו</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Cinzel:wght@700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Heebo', sans-serif;
+      overflow-y: auto;
+    }
+
+    body {
+      background: url('img/תמונה מספר 9.png') center center/cover no-repeat fixed;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 4, 20, 0.78);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .top-bar {
+      position: relative;
+      z-index: 10;
+      padding: 11px 24px;
+      background: linear-gradient(90deg, rgba(80, 20, 140, 0.5), rgba(50, 10, 100, 0.2), transparent);
+      border-bottom: 1px solid rgba(160, 80, 255, 0.25);
+    }
+
+    .top-bar h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: #d4a0ff;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(180, 100, 255, 0.6);
+    }
+
+    .main-wrap {
+      position: relative;
+      z-index: 10;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* תמונת כדור גדולה למעלה */
+    .ball-hero {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      max-height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ball-hero img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* משפט מעוצב */
+    .riddle-phrase {
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #d4a0ff;
+      letter-spacing: 3px;
+      line-height: 1.8;
+      text-shadow: 0 0 20px rgba(180, 80, 255, 0.5), 0 0 50px rgba(120, 30, 200, 0.3);
+      padding: 0 12px;
+    }
+
+    /* גריד 6 תמונות */
+    .balls-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0;
+      width: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(150, 60, 255, 0.25);
+    }
+
+    .ball-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      border-left: 1px solid rgba(150, 60, 255, 0.2);
+      background: rgba(15, 5, 35, 0.6);
+    }
+
+    .ball-cell:last-child {
+      border-left: none;
+    }
+
+    .ball-cell img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+    }
+
+    .ball-code {
+      width: 100%;
+      padding: 10px 4px;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: clamp(11px, 1.4vw, 17px);
+      font-weight: 700;
+      color: #c084fc;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(180, 80, 255, 0.4);
+      border-top: 1px solid rgba(150, 60, 255, 0.2);
+      background: rgba(25, 8, 55, 0.5);
+    }
+
+    /* קוד קלט */
+    .code-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      padding: 20px;
+      border: 1px solid rgba(150, 60, 255, 0.25);
+      border-radius: 16px;
+      background: rgba(15, 5, 35, 0.4);
+    }
+
+    .code-label {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: rgba(200, 140, 255, 0.7);
+      text-transform: uppercase;
+    }
+
+    .code-slots {
+      display: flex;
+      gap: 10px;
+      direction: ltr;
+    }
+
+    .code-slot {
+      width: 52px;
+      height: 60px;
+      border: 2px solid rgba(150, 60, 255, 0.4);
+      border-radius: 12px;
+      background: rgba(20, 5, 45, 0.7);
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #d0a0ff;
+      text-align: center;
+      outline: none;
+      caret-color: #c084fc;
+      transition: all 0.2s;
+    }
+
+    .code-slot:focus {
+      border-color: rgba(200, 100, 255, 0.85);
+      background: rgba(60, 15, 110, 0.7);
+      box-shadow: 0 0 16px rgba(160, 60, 255, 0.4);
+    }
+
+    .check-btn {
+      background: linear-gradient(135deg, #7b2fff, #5a1fa8);
+      border: none;
+      border-radius: 50px;
+      padding: 13px 52px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      letter-spacing: 2px;
+      box-shadow: 0 6px 24px rgba(123, 47, 255, 0.5);
+      transition: all 0.25s;
+    }
+
+    .check-btn:hover {
+      box-shadow: 0 10px 36px rgba(123, 47, 255, 0.75);
+      transform: translateY(-2px);
+    }
+
+    .feedback {
+      font-size: 13px;
+      color: #ff6666;
+      min-height: 18px;
+      text-align: center;
+    }
+
+    .feedback.ok {
+      color: #00ff88;
+    }
+
+    /* פופאפ */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .popup {
+      border-radius: 20px;
+      padding: 36px 44px;
+      text-align: center;
+      max-width: 440px;
+      width: 90%;
+      background: linear-gradient(145deg, #0a0020, #110035);
+      border: 1.5px solid rgba(150, 60, 255, 0.75);
+      box-shadow: 0 0 60px rgba(120, 40, 255, 0.5);
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.75);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .pop-ball-img {
+      width: 110px;
+      height: auto;
+      margin: 0 auto 14px;
+      display: block;
+      border-radius: 50%;
+      box-shadow: 0 0 30px rgba(180, 80, 255, 0.6);
+      animation: ballFloat 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes ballFloat {
+      from {
+        transform: translateY(0) scale(1);
+      }
+
+      to {
+        transform: translateY(-12px) scale(1.05);
+      }
+    }
+
+    .pop-title {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: #ffd700;
+      letter-spacing: 3px;
+      text-shadow: 0 0 28px rgba(255, 210, 0, 0.7);
+      margin-bottom: 12px;
+    }
+
+    .pop-body {
+      font-size: 14px;
+      color: #d4b8ff;
+      line-height: 2;
+    }
+
+    .pop-btn {
+      margin-top: 22px;
+      background: linear-gradient(135deg, #7b2fff, #5a1fa8);
+      border: none;
+      border-radius: 50px;
+      padding: 12px 40px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(123, 47, 255, 0.5);
+      transition: all 0.2s;
+    }
+
+    .pop-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <h1>🔮 &nbsp; כדור הטונגו</h1>
+  </div>
+
+  <div class="main-wrap">
+
+    <!-- תמונת כדור גדולה -->
+    <div class="ball-hero">
+      <!-- ▼ תמונת הכדור הגדולה ▼ -->
+      <img src="img/כדור_טונגו_ראשי.jpg" alt="כדור הטונגו" onerror="this.style.display='none'">
+    </div>
+
+    <!-- משפט מעוצב -->
+    <div class="riddle-phrase">
+      <!-- ▼ הכנס את המשפט כאן ▼ -->
+     רק כדור אחד הוא האמיתי- הורידו את הדופליקטים.
+    </div>
+
+    <!-- 6 תמונות כדורים עם מספרים -->
+    <div class="balls-grid">
+
+      <div class="ball-cell">
+        <!-- ▼ תמונת כדור 1 ▼ -->
+        <img src="img/כדור הטונגו.jpg" alt="כדור 1"
+          onerror="this.style.background='#2a1060';this.style.minHeight='100px'">
+        <div class="ball-code">4827</div>
+      </div>
+
+      <div class="ball-cell">
+        <!-- ▼ תמונת כדור 2 ▼ -->
+        <img src="img/כדור הטונגו.jpg" alt="כדור 2"
+          onerror="this.style.background='#2a1060';this.style.minHeight='100px'">
+        <div class="ball-code">7394</div>
+      </div>
+
+      <div class="ball-cell">
+        <!-- ▼ תמונת כדור 3 ▼ -->
+        <img src="img/כדור הטונגו.jpg" alt="כדור 3"
+          onerror="this.style.background='#2a1060';this.style.minHeight='100px'">
+        <div class="ball-code">6552</div>
+      </div>
+
+      <div class="ball-cell">
+        <!-- ▼ תמונת כדור 4 ▼ -->
+        <img src="img/כדור הטונגו.jpg" alt="כדור 4"
+          onerror="this.style.background='#2a1060';this.style.minHeight='100px'">
+        <div class="ball-code">4827</div>
+      </div>
+
+      <div class="ball-cell">
+        <!-- ▼ תמונת כדור 5 ▼ -->
+        <img src="img/כדור הטונגו.jpg" alt="כדור 5"
+          onerror="this.style.background='#2a1060';this.style.minHeight='100px'">
+        <div class="ball-code">8615</div>
+      </div>
+
+      <div class="ball-cell">
+        <!-- ▼ תמונת כדור 6 ▼ -->
+        <img src="img/כדור הטונגו.jpg" alt="כדור 6"
+          onerror="this.style.background='#2a1060';this.style.minHeight='100px'">
+        <div class="ball-code">7394</div>
+      </div>
+
+    </div>
+
+    <!-- קלט קוד -->
+    <div class="code-section">
+      <div class="code-label">◆ הכנס את קוד השחרור</div>
+      <div class="code-slots">
+        <input class="code-slot" id="cs0" type="text" maxlength="1" inputmode="numeric">
+        <input class="code-slot" id="cs1" type="text" maxlength="1" inputmode="numeric">
+        <input class="code-slot" id="cs2" type="text" maxlength="1" inputmode="numeric">
+      </div>
+      <button class="check-btn" onclick="checkCode()">◆ &nbsp; שחרר את הכדור</button>
+      <div class="feedback" id="fb"></div>
+    </div>
+
+  </div>
+
+  <!-- פופאפ ניצחון -->
+  <div class="overlay hidden" id="ov-win">
+    <div class="popup">
+      <!-- ▼ תמונת הכדור בפופאפ ▼ -->
+      <img class="pop-ball-img" src="img/כדור הטונגו.jpg" alt="כדור"
+        onerror="this.outerHTML='<div style=\'font-size:56px;margin-bottom:14px\'>🔮</div>'">
+      <div class="pop-title">הצלחתם!</div>
+      <div class="pop-body">
+        הצלחתם לשחרר את הכדור.<br><br>
+        <strong style="color:#ff9dff;">אבל זכרו —<br>אין להעביר אותו מסקנדר לסקנדר.</strong>
+      </div>
+      <a href="חדר אוצורות3.html"><button class="pop-btn" onclick="goNext()">המשך ◆</button></a>
+    </div>
+  </div>
+
+  <audio id="background-music" controls>
+    <source src="מוזיקת רקע/מנגינה מספר 8.mp3" type="audio/mpeg">
+    הדפדפן שלך אינו תומך בהשמעת אודיו.
+  </audio>
+
+  <script>
+    // קוד מוצפן — 281 (מימין לשמאל)
+    const _ck = btoa(unescape(encodeURIComponent('812')));
+    const CORRECT = decodeURIComponent(escape(atob(_ck)));
+
+    // ניווט בין תיבות
+    [0, 1, 2].forEach(i => {
+      const inp = document.getElementById('cs' + i);
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/[^0-9]/g, '').slice(-1);
+        if (inp.value && i < 2) document.getElementById('cs' + (i + 1)).focus();
+      });
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !inp.value && i > 0) document.getElementById('cs' + (i - 1)).focus();
+        if (e.key === 'Enter') checkCode();
+      });
+    });
+
+    function checkCode() {
+      const fb = document.getElementById('fb');
+      const entered = [0, 1, 2].map(i => document.getElementById('cs' + i).value).join('');
+      if (entered.length < 3) { fb.textContent = '✗ הכנס 3 ספרות'; fb.className = 'feedback'; return; }
+      if (entered === CORRECT) {
+        fb.textContent = '✓ קוד נכון!'; fb.className = 'feedback ok';
+        setTimeout(() => document.getElementById('ov-win').classList.remove('hidden'), 600);
+      } else {
+        fb.textContent = '✗ קוד שגוי, נסה שוב'; fb.className = 'feedback';
+        setTimeout(() => {
+          [0, 1, 2].forEach(i => document.getElementById('cs' + i).value = '');
+          document.getElementById('cs0').focus();
+          fb.textContent = '';
+        }, 900);
+      }
+    }
+
+    function goNext() {
+      // ▼ שנה לנתיב הדף הבא ▼
+      window.location.href = 'duplicates_room3.html';
+    }
+  </script>
+</body>
+
+</html>

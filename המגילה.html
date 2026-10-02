@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מכתב מדוקטור קאלי</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #000;
+    font-family: 'Heebo', sans-serif;
+    min-height: 100vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 50%;
+    background: radial-gradient(ellipse at 50% 100%, rgba(110,30,220,0.35) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .dot {
+    position: fixed;
+    border-radius: 50%;
+    background: #7b2fff;
+    pointer-events: none;
+    animation: floatDot ease-in-out infinite;
+  }
+  @keyframes floatDot {
+    0%   { transform: translateY(0px);   opacity: 0.15; }
+    50%  { transform: translateY(-18px); opacity: 0.35; }
+    100% { transform: translateY(0px);   opacity: 0.15; }
+  }
+
+  .container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 24px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    animation: fadeIn 1.2s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .letter-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: #c084fc;
+    letter-spacing: 4px;
+    text-align: center;
+    text-shadow: 0 0 20px rgba(192,132,252,0.45), 0 0 50px rgba(168,85,247,0.15);
+  }
+  .letter-title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #c084fc;
+    letter-spacing: 4px;
+    text-align: center;
+    text-shadow: 0 0 25px rgba(192,132,252,0.5), 0 0 60px rgba(168,85,247,0.2);
+  }
+  .letter-box {
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .letter-box img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .btn-wrap { animation: floatBtn 3s ease-in-out infinite; }
+  @keyframes floatBtn {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-10px); }
+  }
+  .main-btn {
+    background: linear-gradient(135deg, #7b2fff, #5a1fa8);
+    border: none;
+    border-radius: 50px;
+    padding: 18px 48px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(123,47,255,0.6), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .main-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    animation: shimmer 2.5s infinite;
+  }
+  @keyframes shimmer { to { left: 100%; } }
+  .main-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 48px rgba(123,47,255,0.8), 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .main-btn:active { transform: scale(0.98); }
+</style>
+</head>
+<body>
+
+<script>
+  [{s:6,x:8,y:15,dur:7},{s:4,x:18,y:70,dur:9},{s:8,x:88,y:20,dur:6},
+   {s:5,x:75,y:65,dur:11},{s:4,x:92,y:50,dur:8},{s:7,x:5,y:45,dur:10},
+   {s:5,x:55,y:88,dur:7},{s:3,x:40,y:10,dur:9},{s:6,x:95,y:80,dur:6},
+   {s:4,x:25,y:90,dur:12},{s:5,x:70,y:8,dur:8},{s:3,x:82,y:40,dur:7},
+  ].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'dot';
+    el.style.cssText = `width:${d.s}px;height:${d.s}px;left:${d.x}%;top:${d.y}%;animation-duration:${d.dur}s;animation-delay:-${(d.dur*Math.random()).toFixed(1)}s;`;
+    document.body.appendChild(el);
+  });
+</script>
+
+<div class="container">
+
+  <div class="letter-title">מכתב אליכם — מד"ר קאלי</div>
+
+  <!-- ▼ החלף YOUR_LETTER.jpg בנתיב תמונת המכתב שלך ▼ -->
+  <div class="letter-box">
+    <img src="img/תמונה 3.png" alt="מכתב מדוקטור קאלי">
+  </div>
+
+  <div class="btn-wrap">
+    <a href="חדר האוצרות.html"><button class="main-btn">אנחנו דופליקטים</button></a>
+  </div>
+
+</div>
+
+</body>
+</html>

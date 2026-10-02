@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>המפתח השלישי</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Cinzel:wght@700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Heebo', sans-serif;
+      overflow-y: auto;
+    }
+
+    body {
+      background: url('img/תמונה מספר 9.png') center center / cover no-repeat fixed;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 4, 20, 0.75);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* כותרת */
+    .top-bar {
+      position: relative;
+      z-index: 10;
+      padding: 11px 24px;
+      background: linear-gradient(90deg, rgba(80, 20, 140, 0.5), rgba(50, 10, 100, 0.2), transparent);
+      border-bottom: 1px solid rgba(160, 80, 255, 0.25);
+    }
+
+    .top-bar h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: #d4a0ff;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(180, 100, 255, 0.6);
+    }
+
+    .main-wrap {
+      position: relative;
+      z-index: 10;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* 7 מספרים גדולים */
+    .numbers-row {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      padding: 22px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .num-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 52px;
+      font-weight: 700;
+      color: #c8a0ff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.2s, text-shadow 0.2s, transform 0.2s;
+      text-shadow: 0 0 12px rgba(180, 80, 255, 0.3);
+      user-select: text;
+      padding: 0 14px;
+    }
+
+    .num-btn:hover {
+      color: #e0c0ff;
+      text-shadow: 0 0 20px rgba(200, 100, 255, 0.6);
+    }
+
+    .num-btn.hint-glow {
+      color: #a8d8ff;
+      text-shadow: 0 0 22px rgba(100, 180, 255, 1), 0 0 50px rgba(60, 130, 255, 0.6);
+    }
+
+    .num-btn.chosen {
+      color: #a8d8ff;
+      text-shadow: 0 0 22px rgba(100, 180, 255, 0.9), 0 0 50px rgba(60, 130, 255, 0.5);
+      transform: scale(1.12);
+    }
+
+    /* שורה תחתונה */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* עמודה שמאל */
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .riddle-box {
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      border-radius: 14px;
+      padding: 20px 22px;
+      background: transparent;
+      flex: 1;
+    }
+
+    .riddle-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: rgba(200, 140, 255, 0.7);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .riddle-text {
+      font-size: 14px;
+      color: #ecdeff;
+      line-height: 2.1;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    /* קוד + תיבה */
+    .code-chest {
+      border: 1px solid rgba(150, 60, 255, 0.25);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .chest-img {
+      height: 88px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .locks-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .lock-icon {
+      font-size: 24px;
+      filter: grayscale(1) brightness(0.45);
+      transition: all 0.5s;
+    }
+
+    .lock-icon.open {
+      filter: none;
+      text-shadow: 0 0 14px rgba(255, 210, 0, 0.9);
+    }
+
+    /* שדה קוד */
+    .code-input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .code-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: rgba(200, 140, 255, 0.7);
+      text-transform: uppercase;
+    }
+
+    .code-slots {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .code-slot {
+      width: 46px;
+      height: 54px;
+      border: 2px solid rgba(150, 60, 255, 0.4);
+      border-radius: 10px;
+      background: rgba(20, 5, 45, 0.7);
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #d0a0ff;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(180, 80, 255, 0.5);
+      transition: all 0.3s;
+      outline: none;
+      caret-color: #c084fc;
+    }
+
+    .code-slot:focus {
+      border-color: rgba(200, 100, 255, 0.85);
+      background: rgba(60, 15, 110, 0.7);
+      box-shadow: 0 0 16px rgba(160, 60, 255, 0.4);
+    }
+
+    .check-btn {
+      background: linear-gradient(135deg, #7b2fff, #5a1fa8);
+      border: none;
+      border-radius: 50px;
+      padding: 10px 0;
+      width: 100%;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      letter-spacing: 2px;
+      box-shadow: 0 6px 20px rgba(123, 47, 255, 0.4);
+      transition: all 0.25s;
+    }
+
+    .check-btn:hover {
+      box-shadow: 0 8px 28px rgba(123, 47, 255, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .feedback {
+      font-size: 12px;
+      color: #ff6666;
+      min-height: 16px;
+      text-align: center;
+    }
+
+    .feedback.ok {
+      color: #00ff88;
+    }
+
+    /* עמודה ימין — טקסט מעוצב */
+    .right-box {
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      border-radius: 14px;
+      padding: 24px 22px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .right-text {
+      font-family: 'Cinzel', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #d4a0ff;
+      line-height: 2.2;
+      text-align: center;
+      text-shadow: 0 0 16px rgba(180, 80, 255, 0.4);
+      letter-spacing: 2px;
+    }
+
+    /* מפתח עף */
+    #key-anim {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      pointer-events: none;
+    }
+
+    #key-anim.run {
+      display: block;
+    }
+
+    #flying-key {
+      position: absolute;
+      font-size: 80px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-shadow: 0 0 30px rgba(255, 210, 0, 0.8);
+    }
+
+    /* פופאפ ניצחון */
+    .win-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .win-overlay.show {
+      display: flex;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .win-emoji {
+      font-size: 72px;
+      animation: floatKey 1.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatKey {
+      from {
+        transform: translateY(0) rotate(-8deg)
+      }
+
+      to {
+        transform: translateY(-14px) rotate(8deg)
+      }
+    }
+
+    .win-msg {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      color: #ffd700;
+      letter-spacing: 4px;
+      text-shadow: 0 0 30px rgba(255, 210, 0, 0.7);
+      text-align: center;
+    }
+
+    .win-btn {
+      margin-top: 8px;
+      background: linear-gradient(135deg, #7b2fff, #5a1fa8);
+      border: none;
+      border-radius: 50px;
+      padding: 13px 40px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(123, 47, 255, 0.5);
+      transition: all 0.2s;
+    }
+
+    .win-btn:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes lockPop {
+      0% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.5) rotate(-20deg)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <h1>🗝️ &nbsp; המפתח השלישי</h1>
+  </div>
+
+  <div class="main-wrap">
+
+    <!-- 7 מספרים גדולים -->
+    <div class="numbers-row" id="numbers-row"></div>
+
+    <div class="bottom-row">
+
+      <!-- עמודה שמאל -->
+      <div class="left-col">
+
+        <div class="riddle-box">
+          <div class="riddle-label">◆ חידה · מפתח שלישי</div>
+          <div class="riddle-text">
+            <!-- ▼ הכנס את טקסט החידה ▼ -->
+            וואו מבולבל שם!
+            <br>
+            אבל תעקבו אחר ההוראות.
+            <br>
+            <br>
+            <em>"המנעול הזה תקוע, כדי לשחרר אותו צריך להעביר את המחשבה ל-Reverse (הילוך אחורי)."</em>
+          </div>
+        </div>
+
+        <!-- קוד + תיבה -->
+        <div class="code-chest">
+          <img class="chest-img" src="img/תמונה מספר 9.png" alt="התיבה" onerror="this.style.display='none'">
+          <div class="locks-row">
+            <div class="lock-icon open" id="lock0">🔓</div>
+            <div class="lock-icon open" id="lock1">🔓</div>
+            <div class="lock-icon" id="lock2">🔒</div>
+            <div class="lock-icon" id="lock3">🔒</div>
+            <div class="lock-icon" id="lock4">🔒</div>
+          </div>
+          <div class="code-input-wrap">
+            <div class="code-label">◆ הקוד שלך</div>
+            <div class="code-slots" id="code-slots">
+              <input class="code-slot" id="slot0" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+              <input class="code-slot" id="slot1" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+              <input class="code-slot" id="slot2" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+              <input class="code-slot" id="slot3" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]">
+            </div>
+            <button class="check-btn" onclick="checkCode()">◆ &nbsp; בדוק קוד</button>
+            <div class="feedback" id="feedback"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- עמודה ימין -->
+      <div class="right-box">
+        <div class="right-text">
+          <!-- ▼ הכנס את הטקסט המעוצב ▼ -->
+          "וואו! פתחתם כבר את המנעול השני! נשאר לכם לפתוח עוד 3 מנעולים בלבד כדי להגיע לתליון המיוחד."
+          <br>
+          עכשיו, כדי לעבור למשימה הבאה, עליכם להתרכז בלוח הבקרה המתוחכם שלפניכם. שימו לב להנחיות הבאות: ראשית, ונמס
+          את אזור הסריקה המואר באדום. לאחר מכן, קחו תא המפתח הדיגיטלי והזינו את כל ה-מירפסמה
+          שמופיעים על הצג הקטן מימין.
+          <br>
+          עליכם לבצע את הפעולה הזו מע דיוק מרבי ובמהירות, לפני שהזמן יסתיים. לסיום, הזיזו את הסמן בעזרת רבכעה
+          אל כפתור ה-'אישור' והתכוננו לשמיעת הקליק של המנעול השלישי!
+          <br>
+          ואז פשוט תלחצו במהירות על הכותרת.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="key-anim">
+    <div id="flying-key">🗝️</div>
+  </div>
+
+  <div class="win-overlay" id="win-overlay">
+    <div class="win-emoji">🗝️</div>
+    <div class="win-msg">מצאת את המפתח השלישי!</div>
+    <a href="מפתח רביעי- התליון.html"><button class="win-btn" onclick="goNext()">המשך לחידה הבאה ◆</button></a>
+  </div>
+
+  <audio id="background-music" controls>
+    <source src="מוזיקת רקע/מנגינה מספר 8.mp3" type="audio/mpeg">
+    הדפדפן שלך אינו תומך בהשמעת אודיו.
+  </audio>
+
+  <script>
+    // ▼ שנה את 7 המספרים ואת 4 הנכונים ▼
+    const ALL_NUMS = [3, 7, 1, 9, 4, 6, 2];  // 7 המספרים בשורה
+    const _ck = btoa(unescape(encodeURIComponent('7142')));  // קוד מוצפן — שנה ל-4 הספרות הנכונות
+    const CORRECT_CODE = decodeURIComponent(escape(atob(_ck)));
+
+    let chosen = []; // עד 4 בחירות
+
+    function buildNumbers() {
+      const row = document.getElementById('numbers-row');
+      ALL_NUMS.forEach((n, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'num-btn';
+        btn.id = 'num-' + i;
+        btn.textContent = n;
+        btn.addEventListener('click', () => toggleNum(i, n, btn));
+        row.appendChild(btn);
+      });
+    }
+
+    function toggleNum(i, n, btn) {
+      const idx = chosen.findIndex(c => c.i === i);
+      if (idx !== -1) {
+        // הסר
+        chosen.splice(idx, 1);
+        btn.classList.remove('chosen');
+      } else {
+        if (chosen.length >= 4) {
+          // הסר הראשון
+          const first = chosen.shift();
+          document.getElementById('num-' + first.i).classList.remove('chosen');
+        }
+        chosen.push({ i, n });
+        btn.classList.add('chosen');
+      }
+      updateSlots();
+    }
+
+    function updateSlots() { } // slots are now inputs
+
+    function checkCode() {
+      const fb = document.getElementById('feedback');
+      const entered = [0, 1, 2, 3].map(i => document.getElementById('slot' + i).value).join('');
+      if (entered.length < 4) {
+        fb.textContent = '✗ הכנס 4 ספרות';
+        fb.className = 'feedback';
+        return;
+      }
+      if (entered === CORRECT_CODE) {
+        fb.textContent = '✓ קוד נכון!';
+        fb.className = 'feedback ok';
+        animateKey();
+      } else {
+        fb.textContent = '✗ קוד שגוי, נסה שוב';
+        fb.className = 'feedback';
+        setTimeout(() => {
+          [0, 1, 2, 3].forEach(i => document.getElementById('slot' + i).value = '');
+          document.getElementById('slot0').focus();
+          fb.textContent = '';
+        }, 900);
+      }
+    }
+
+    function animateKey() {
+      const lock2 = document.getElementById('lock2');
+      const lr = lock2.getBoundingClientRect();
+      const tx = lr.left + lr.width / 2 - window.innerWidth / 2;
+      const ty = lr.top + lr.height / 2 - window.innerHeight / 2;
+      const st = document.createElement('style');
+      st.textContent = `@keyframes kf3{
+    0%{top:50%;left:50%;transform:translate(-50%,-50%) scale(1);opacity:1;}
+    55%{transform:translate(-50%,-50%) scale(1.4);opacity:1;}
+    100%{top:calc(50% + ${ty}px);left:calc(50% + ${tx}px);transform:translate(-50%,-50%) scale(0.3);opacity:0;}
+  }`;
+      document.head.appendChild(st);
+      const ka = document.getElementById('key-anim');
+      const fk = document.getElementById('flying-key');
+      fk.style.animation = 'none';
+      ka.classList.add('run');
+      fk.style.animation = 'kf3 1.5s cubic-bezier(0.4,0,0.2,1) forwards';
+      setTimeout(() => {
+        ka.classList.remove('run');
+        lock2.classList.add('open'); lock2.textContent = '🔓';
+        lock2.style.animation = 'lockPop 0.5s ease';
+        setTimeout(() => document.getElementById('win-overlay').classList.add('show'), 700);
+      }, 1500);
+    }
+
+    function goNext() { window.location.href = 'duplicates_puzzle4.html'; }
+
+    buildNumbers();
+    updateSlots();
+
+    // מעבר אוטומטי בין תיבות
+    [0, 1, 2, 3].forEach(i => {
+      const inp = document.getElementById('slot' + i);
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/[^0-9]/g, '').slice(-1);
+        if (inp.value && i < 3) document.getElementById('slot' + (i + 1)).focus();
+      });
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !inp.value && i > 0) document.getElementById('slot' + (i - 1)).focus();
+        if (e.key === 'Enter') checkCode();
+      });
+    });
+
+    // הספרות הנכונות — לפי אינדקס ב-ALL_NUMS
+    // מחושב אוטומטית מהקוד הנכון
+    const correctDigits = CORRECT_CODE.split('').map(d => parseInt(d));
+    const correctIndices = correctDigits.map(d => ALL_NUMS.indexOf(d));
+
+    document.addEventListener('selectionchange', () => {
+      const sel = window.getSelection();
+      if (!sel || sel.isCollapsed) return;
+
+      // בדוק שהבחירה נוגעת באחד מהמספרים
+      const range = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+      if (!range) return;
+
+      let touchesNumber = false;
+      for (let i = 0; i < ALL_NUMS.length; i++) {
+        const el = document.getElementById('num-' + i);
+        if (el && range.intersectsNode(el)) { touchesNumber = true; break; }
+      }
+      if (!touchesNumber) return;
+
+      // הדלק זוהר על הספרות הנכונות
+      correctIndices.forEach(idx => {
+        if (idx !== -1) document.getElementById('num-' + idx).classList.add('hint-glow');
+      });
+      clearTimeout(window._hintTimer);
+      window._hintTimer = setTimeout(() => {
+        correctIndices.forEach(idx => {
+          if (idx !== -1) document.getElementById('num-' + idx).classList.remove('hint-glow');
+        });
+      }, 1800);
+    });
+  </script>
+</body>
+
+</html>

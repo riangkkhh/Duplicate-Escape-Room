@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משימה הושלמה - מסדר הסגול</title>
+    <style>
+        /* הגדרות כלליות ואנימציות רקע */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Assistant', 'Segoe UI', sans-serif;
+            /* רקע ברירת מחדל אם התמונה לא נטענת */
+            background-color: #0a001a; 
+            
+            /* --- הוסף את נתיב תמונת הרקע שלך כאן --- */
+            background-image: url('img/תמונה\ מספר\ 4.jpg'); 
+            
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            color: white;
+        }
+
+        /* קונטיינר מרכזי - זכוכית סגולה כהה */
+        .glass-card {
+            background: rgba(20, 0, 40, 0.65); /* סגול כהה שקוף */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 2px solid rgba(200, 100, 255, 0.3); /* גבול סגול בהיר עדין */
+            border-radius: 30px;
+            padding: 50px;
+            width: 90%;
+            max-width: 950px;
+            text-align: center;
+            /* צל היקפי זוהר סגול */
+            box-shadow: 0 0 50px rgba(150, 0, 255, 0.4), inset 0 0 20px rgba(150, 0, 255, 0.2);
+            animation: fadeIn 1.5s ease-out;
+            margin: 30px;
+        }
+
+        /* אנימציית כניסה */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* כותרת ראשית - אפקט ניאון סגול חשמלי */
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #bf00ff, /* סגול חשמלי */
+                0 0 30px #bf00ff,
+                0 0 40px #bf00ff;
+            animation: pulsateGlow 2.5s infinite alternate;
+        }
+
+        @keyframes pulsateGlow {
+            0% { text-shadow: 0 0 10px #fff, 0 0 20px #bf00ff, 0 0 30px #bf00ff; }
+            100% { text-shadow: 0 0 15px #fff, 0 0 30px #bf00ff, 0 0 50px #bf00ff, 0 0 70px #bf00ff; }
+        }
+
+        h2 {
+            color: #e0b0ff; /* סגול לילך בהיר */
+            text-shadow: 0 0 10px rgba(191, 0, 255, 0.5);
+        }
+
+        p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            color: #f0e0ff;
+        }
+
+        /* גריד הפריטים - זוהר סגול ב-Hover */
+        .items-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 50px 0;
+            flex-wrap: wrap;
+        }
+
+        .item-card {
+            width: 200px;
+            height: 200px;
+            border-radius: 25px;
+            /* גבול סגול זוהר כברירת מחדל */
+            border: 4px solid #bf00ff; 
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 0 20px rgba(191, 0, 255, 0.5);
+            transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .item-card:hover {
+            transform: scale(1.15) translateY(-10px);
+            box-shadow: 0 0 60px rgba(191, 0, 255, 0.9);
+            border-color: #fff; /* גבול הופך ללבן ב-hover */
+        }
+
+        /* כפתור שיתוף מעוצב - סגול ניאון */
+        .share-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 18px 50px;
+            font-size: 1.3rem;
+            color: #fff;
+            background: linear-gradient(45deg, #800080, #bf00ff);
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 0 20px rgba(191, 0, 255, 0.6);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 40px rgba(191, 0, 255, 1);
+            background: linear-gradient(45deg, #bf00ff, #fff);
+            color: #1a0033;
+        }
+
+        /* אזור הבונוס המסתורי */
+        .bonus-badge {
+            margin-top: 60px;
+            padding: 25px;
+            background: rgba(10, 0, 20, 0.5);
+            border-radius: 15px;
+            border: 2px dashed #bf00ff;
+            font-size: 1.5rem;
+            color: #f0e0ff;
+            text-shadow: 0 0 10px #bf00ff;
+            letter-spacing: 1.5px;
+            animation: subtlePulse 3s infinite;
+        }
+
+        @keyframes subtlePulse {
+            0% { opacity: 0.7; box-shadow: 0 0 10px rgba(191, 0, 255, 0.3); }
+            50% { opacity: 1; box-shadow: 0 0 25px rgba(191, 0, 255, 0.6); }
+            100% { opacity: 0.7; box-shadow: 0 0 10px rgba(191, 0, 255, 0.3); }
+        }
+
+        /* מסגרת לגוגל פורמס - נקייה ומשתלבת */
+        .google-form-wrapper {
+            margin: 50px 0;
+            border-radius: 20px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.9); /* לבן כמעט מלא לטופס עצמו */
+            padding: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        iframe {
+            width: 100%;
+            height: 550px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="glass-card">
+    <h1>כל הכבוד!</h1>
+    <p>הצלחתם לחלץ את הפריטים במהירות ולהביאם למקום שמור!</p>
+    <p>המסדר מודה לכם על תושייתכם וגבורתכם.</p>
+
+    <div class="items-container">
+        <div class="item-card" style="background-image: url('img/ספר\ הריקורדום.webp');" title="פריט מסתורי 1"></div>
+        <div class="item-card" style="background-image: url('img/תליון\ ההקסגונום.jpg');" title="פריט מסתורי 2"></div>
+        <div class="item-card" style="background-image: url('img/כדור\ הטונגו\ 1.png');" title="פריט מסתורי 3"></div>
+    </div>
+
+    <div style="margin: 50px 0;">
+        <h2>נהניתם ?</h2>
+        <p>אל תשמרו את זה לעצמכם, ספרו לחבריכם!</p>
+        <a href="קישור_לאתר_שלך" class="share-btn">שתפו!</a>
+    </div>
+
+    <h2>נשמח לשמוע !:</h2>
+    <div class="google-form-wrapper">
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSexcpvfLypXdw6P4_Jvf-SVqLHFRvqdKJ8f4NRnXivZuDczAA/viewform?usp=publish-editor">טוען...</iframe>
+    </div>
+
+    <div class="bonus-badge">
+        <span style="font-size: 1.8rem; margin-right: 10px;">✦</span>
+        בקרוב! חידות בונוס בלעדיות לקוראי הסדרה.
+        <span style="font-size: 1.8rem; margin-left: 10px;">✦</span>
+    </div>
+</div>
+
+</body>
+</html>

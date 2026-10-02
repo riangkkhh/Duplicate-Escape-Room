@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>המפתח השני</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Cinzel:wght@700&family=UnifrakturMaguntia&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Heebo', sans-serif;
+      overflow-y: auto;
+    }
+
+    body {
+      background: url('img/תמונה מספר 9.png') center center / cover no-repeat fixed;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 4, 20, 0.75);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .top-bar {
+      position: relative;
+      z-index: 10;
+      padding: 11px 24px;
+      background: linear-gradient(90deg, rgba(80, 20, 140, 0.5), rgba(50, 10, 100, 0.2), transparent);
+      border-bottom: 1px solid rgba(160, 80, 255, 0.25);
+    }
+
+    .top-bar h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: #d4a0ff;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(180, 100, 255, 0.6);
+    }
+
+    .main-wrap {
+      position: relative;
+      z-index: 10;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .img-top {
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      min-height: 260px;
+    }
+
+    .img-top img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* גריד כפתורים */
+    .grid-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .creepy-title {
+      text-align: center;
+      font-family: 'UnifrakturMaguntia', cursive;
+      font-size: 26px;
+      color: #c084fc;
+      text-shadow: 0 0 18px rgba(180, 50, 255, 0.8), 0 0 50px rgba(120, 0, 220, 0.5);
+      letter-spacing: 3px;
+      animation: creepyPulse 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes creepyPulse {
+      from {
+        text-shadow: 0 0 14px rgba(180, 50, 255, 0.6), 0 0 30px rgba(100, 0, 180, 0.3);
+        letter-spacing: 2px;
+      }
+
+      to {
+        text-shadow: 0 0 28px rgba(220, 80, 255, 1), 0 0 70px rgba(160, 0, 255, 0.6);
+        letter-spacing: 5px;
+      }
+    }
+
+    #letter-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+
+    .letter-btn {
+      border: 1px solid rgba(150, 60, 255, 0.45);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      aspect-ratio: 0.65;
+      background: rgba(30, 8, 60, 0.7);
+      transition: all 0.22s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding-bottom: 6px;
+    }
+
+    .letter-btn:hover {
+      border-color: rgba(180, 80, 255, 0.8);
+      background: rgba(60, 15, 110, 0.8);
+    }
+
+    .letter-btn.chosen {
+      background: rgba(80, 20, 160, 0.85);
+      box-shadow: 0 0 18px rgba(160, 60, 255, 0.7);
+      border-color: rgba(210, 110, 255, 0.95);
+    }
+
+    .letter-btn img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.65;
+      border-radius: 10px;
+    }
+
+    .letter-btn .lbl {
+      position: relative;
+      z-index: 2;
+      font-family: 'Cinzel', serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: #f0d8ff;
+      text-shadow: 0 0 10px rgba(180, 80, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.9);
+    }
+
+    .letter-btn.chosen .lbl {
+      color: #fff;
+      text-shadow: 0 0 16px rgba(230, 150, 255, 1);
+    }
+
+    .letter-btn .chosen-check {
+      display: none;
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      z-index: 3;
+      font-size: 14px;
+      color: #00ff88;
+    }
+
+    .letter-btn.chosen .chosen-check {
+      display: block;
+    }
+
+    #grid-feedback {
+      font-size: 13px;
+      color: #c084fc;
+      text-align: center;
+      min-height: 20px;
+      letter-spacing: 2px;
+    }
+
+    /* עמודה ימין */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .riddle-box {
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      border-radius: 14px;
+      padding: 18px 20px;
+      background: transparent;
+    }
+
+    .riddle-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: rgba(200, 140, 255, 0.7);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .riddle-text {
+      font-size: 14px;
+      color: #ecdeff;
+      line-height: 2;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .riddle-text b {
+      color: #d580ff;
+      font-weight: 900;
+      text-shadow: 0 0 12px rgba(200, 80, 255, 0.9), 0 0 30px rgba(160, 40, 255, 0.5);
+      animation: letterGlow 2.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes letterGlow {
+      from {
+        text-shadow: 0 0 8px rgba(180, 60, 255, 0.7), 0 0 20px rgba(130, 20, 220, 0.4);
+      }
+
+      to {
+        text-shadow: 0 0 18px rgba(230, 100, 255, 1), 0 0 45px rgba(180, 50, 255, 0.7);
+      }
+    }
+
+    .chest-box {
+      border: 1px solid rgba(150, 60, 255, 0.25);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .chest-box img {
+      height: 90px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .locks-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .lock-icon {
+      font-size: 24px;
+      filter: grayscale(1) brightness(0.45);
+      transition: all 0.5s;
+    }
+
+    .lock-icon.open {
+      filter: none;
+      text-shadow: 0 0 14px rgba(255, 210, 0, 0.9);
+      animation: lockPop 0.5s ease;
+    }
+
+    @keyframes lockPop {
+      0% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.5) rotate(-20deg)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    /* מפתח עף */
+    #key-anim {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      pointer-events: none;
+    }
+
+    #key-anim.run {
+      display: block;
+    }
+
+    #flying-key {
+      position: absolute;
+      font-size: 80px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-shadow: 0 0 30px rgba(255, 210, 0, 0.8);
+    }
+
+    /* פופאפ ניצחון */
+    .win-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .win-overlay.show {
+      display: flex;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .win-emoji {
+      font-size: 72px;
+      animation: floatKey 1.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatKey {
+      from {
+        transform: translateY(0) rotate(-8deg)
+      }
+
+      to {
+        transform: translateY(-14px) rotate(8deg)
+      }
+    }
+
+    .win-msg {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      color: #ffd700;
+      letter-spacing: 4px;
+      text-shadow: 0 0 30px rgba(255, 210, 0, 0.7);
+      text-align: center;
+    }
+
+    .win-btn {
+      margin-top: 8px;
+      background: linear-gradient(135deg, #7b2fff, #5a1fa8);
+      border: none;
+      border-radius: 50px;
+      padding: 13px 40px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(123, 47, 255, 0.5);
+      transition: all 0.2s;
+    }
+
+    .win-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <h1>🗝️ &nbsp; המפתח השני</h1>
+  </div>
+
+  <div class="main-wrap">
+
+    <!-- תמונה גדולה למעלה -->
+    <div class="img-top">
+      <!-- ▼ החלף בנתיב התמונה ▼ -->
+      <img src="img/תמונה מספר 11.png" alt="תמונת החידה" onerror="this.style.display='none'">
+    </div>
+
+    <div class="bottom-row">
+
+      <!-- גריד כפתורי אותיות -->
+      <div class="grid-col">
+        <div class="creepy-title">שפה דופליקטית עתיקה</div>
+        <div id="letter-grid"></div>
+        <div id="grid-feedback">0 / 5 נבחרו</div>
+      </div>
+
+      <!-- עמודה ימין -->
+      <div class="right-col">
+
+        <div class="riddle-box">
+          <div class="riddle-label">◆ חידה · מפתח שני</div>
+          <div class="riddle-text">
+            <!-- ▼ הכנס את טקסט החידה ▼ -->
+            <b>מ</b>אתיים <b>ש</b>נה <b>ל</b>פני <b>פ</b>רוץ <b>ה</b>מהפכה <b>ה</b>גדולה,
+            <b>נ</b>וסד <b>מ</b>סדר <b>ה</b>דופליקטים <b>ה</b>מסתורי.
+            <b>ב</b>אותם <b>י</b>מים <b>ר</b>חוקים, <b>ח</b>ברי <b>ה</b>מסדר
+            <b>ת</b>קשרו <b>ב</b>יניהם <b>ב</b>אמצעות <b>ש</b>פה <b>ס</b>ודית <b>ו</b>ייחודית,
+            <b>ש</b>נשמרה <b>ב</b>קנאות <b>ב</b>תוך <b>ה</b>חוג <b>ה</b>פנימי.
+            <b>ע</b>ם <b>ש</b>וך <b>ס</b>ערת <b>ה</b>מהפכה, <b>נ</b>שחקה <b>ה</b>שפה
+            <b>ו</b>נעלמה <b>מ</b>דפי <b>ה</b>היסטוריה. <b>כ</b>יום, <b>נ</b>ותרו
+            <b>ר</b>ק <b>ב</b>ודדים <b>ה</b>נושאים <b>א</b>ת <b>ז</b>כרה <b>ב</b>ליבם.
+            <b>כ</b>די <b>ל</b>הצליח <b>ל</b>פרוץ <b>א</b>ת <b>ה</b>מנעול <b>ה</b>שני
+            <b>ה</b>מגן <b>ע</b>ל <b>ה</b>תיבה, <b>ע</b>ליכם <b>ל</b>התבונן <b>ל</b>עומק
+            <b>ב</b>חפצים <b>ה</b>עתיקים <b>ש</b>לפניכם. <b>ע</b>ליכם <b>ל</b>פענח
+            <b>א</b>ת <b>ה</b>רמזים <b>ה</b>טמונים <b>ב</b>הם <b>ו</b>לחשוף <b>א</b>ת
+            <b>ה</b>משמעות <b>ה</b>נסתרת <b>ש</b>הם <b>מ</b>ייצגים.<br>
+
+            שימו לב!<br>
+            החפצים הם: הגה, שן, רדיו, ברז, אופניים.
+            <br>
+            ומה יקרה אם תקראו את זה מימין לשמאל? <br>
+            אתם בטוחים שהוא הכיר את ד"ר קאלי? <br>
+            תזדרזו! זירו קרוב.
+          </div>
+        </div>
+
+        <div class="chest-box">
+          <img src="img/תמונה מספר 9.png" alt="התיבה" onerror="this.style.display='none'">
+          <div class="locks-row">
+            <div class="lock-icon open" id="lock0">🔓</div>
+            <div class="lock-icon" id="lock1">🔒</div>
+            <div class="lock-icon" id="lock2">🔒</div>
+            <div class="lock-icon" id="lock3">🔒</div>
+            <div class="lock-icon" id="lock4">🔒</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div id="key-anim">
+    <div id="flying-key">🗝️</div>
+  </div>
+
+  <div class="win-overlay" id="win-overlay">
+    <div class="win-emoji">🗝️</div>
+    <div class="win-msg">מצאת את המפתח השני!</div>
+    <a href="מפתח שלישי- התליון.html"><button class="win-btn" onclick="goNext()">המשך לחידה הבאה ◆</button></a>
+  </div>
+
+  <audio id="background-music" controls>
+    <source src="מוזיקת רקע/מנגינה מספר 8.mp3" type="audio/mpeg">
+    הדפדפן שלך אינו תומך בהשמעת אודיו.
+  </audio>
+
+  <script>
+    // האותיות הנכונות — מוסתרות
+    const _ck = btoa(unescape(encodeURIComponent('אברשה')));
+    const CORRECT = [...decodeURIComponent(escape(atob(_ck)))];
+
+    // 20 אותיות לגריד — כולל הנכונות
+    const ALL = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ר', 'ש', 'פ', 'צ'];
+    function shuffle(a) { return [...a].sort(() => Math.random() - 0.5); }
+    const GRID = shuffle(ALL);
+
+    let chosen = new Set(); // שומר index
+
+    function buildGrid() {
+      const grid = document.getElementById('letter-grid');
+      grid.innerHTML = '';
+      GRID.forEach((lt, i) => {
+        const btn = document.createElement('div');
+        btn.className = 'letter-btn';
+        btn.id = 'btn-' + i;
+
+        // תמונה — ▼ שנה נתיב לפי האות ▼
+        const img = document.createElement('img');
+        img.src = 'img/תמונה מספר ' + (13 + i) + '.jpg';
+        img.onerror = function () { this.style.display = 'none'; };
+        btn.appendChild(img);
+
+        // ✓ מעל
+        const chk = document.createElement('div');
+        chk.className = 'chosen-check'; chk.textContent = '✓';
+        btn.appendChild(chk);
+
+        // אות
+        const lbl = document.createElement('div');
+        lbl.className = 'lbl'; lbl.textContent = lt;
+        btn.appendChild(lbl);
+
+        btn.addEventListener('click', () => toggle(i, lt, btn));
+        grid.appendChild(btn);
+      });
+    }
+
+    function toggle(i, lt, btn) {
+      if (chosen.has(i)) {
+        chosen.delete(i);
+        btn.classList.remove('chosen');
+      } else {
+        chosen.add(i);
+        btn.classList.add('chosen');
+      }
+      updateFeedback();
+    }
+
+    function updateFeedback() {
+      const fb = document.getElementById('grid-feedback');
+      const chosenLetters = [...chosen].map(i => GRID[i]);
+      fb.style.color = '#c084fc';
+      fb.textContent = chosen.size + ' / 5 נבחרו';
+
+      if (chosen.size === 5) {
+        const correct = CORRECT.every(lt => chosenLetters.includes(lt));
+        if (correct) {
+          fb.textContent = '✓ נכון! כל האותיות נמצאו!';
+          fb.style.color = '#00ff88';
+          setTimeout(() => animateKey(), 700);
+        } else {
+          fb.textContent = '✗ לא נכון, נסה שוב';
+          fb.style.color = '#ff6666';
+          setTimeout(() => {
+            chosen.forEach(i => document.getElementById('btn-' + i).classList.remove('chosen'));
+            chosen.clear();
+            fb.textContent = '0 / 5 נבחרו';
+            fb.style.color = '#c084fc';
+          }, 900);
+        }
+      }
+    }
+
+    function animateKey() {
+      const lock1 = document.getElementById('lock1');
+      const lr = lock1.getBoundingClientRect();
+      const tx = lr.left + lr.width / 2 - window.innerWidth / 2;
+      const ty = lr.top + lr.height / 2 - window.innerHeight / 2;
+      const st = document.createElement('style');
+      st.textContent = `@keyframes kf2{
+    0%{top:50%;left:50%;transform:translate(-50%,-50%) scale(1);opacity:1;}
+    55%{transform:translate(-50%,-50%) scale(1.4);opacity:1;}
+    100%{top:calc(50% + ${ty}px);left:calc(50% + ${tx}px);transform:translate(-50%,-50%) scale(0.3);opacity:0;}
+  }`;
+      document.head.appendChild(st);
+      const ka = document.getElementById('key-anim');
+      const fk = document.getElementById('flying-key');
+      fk.style.animation = 'none';
+      ka.classList.add('run');
+      fk.style.animation = 'kf2 1.5s cubic-bezier(0.4,0,0.2,1) forwards';
+      setTimeout(() => {
+        ka.classList.remove('run');
+        lock1.classList.add('open'); lock1.textContent = '🔓';
+        setTimeout(() => document.getElementById('win-overlay').classList.add('show'), 700);
+      }, 1500);
+    }
+
+    function goNext() { window.location.href = 'duplicates_puzzle3.html'; }
+
+    buildGrid();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>המפתח הרביעי</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Cinzel:wght@700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Heebo', sans-serif;
+      overflow-y: auto;
+    }
+
+    body {
+      background: url('img/תמונה מספר 9.png') center center/cover no-repeat fixed;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 4, 20, 0.78);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .top-bar {
+      position: relative;
+      z-index: 10;
+      padding: 11px 24px;
+      background: linear-gradient(90deg, rgba(80, 20, 140, 0.5), rgba(50, 10, 100, 0.2), transparent);
+      border-bottom: 1px solid rgba(160, 80, 255, 0.25);
+    }
+
+    .top-bar h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      color: #d4a0ff;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(180, 100, 255, 0.6);
+    }
+
+    .main-wrap {
+      position: relative;
+      z-index: 10;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ══ חדר ══ */
+    .room-section {
+      position: relative;
+      width: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      height: 400px;
+    }
+
+    .room-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* 4 תמונות ממוזגות — מיקומים מדויקים לפי הסקיצה */
+    .piece {
+      position: absolute;
+      cursor: grab;
+      overflow: hidden;
+      /* opacity: 0.5; */
+      /* mix-blend-mode: luminosity;
+      transition: opacity 0.3s, mix-blend-mode 0.3s, box-shadow 0.3s; */
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+    }
+
+    .piece:hover {
+      /* opacity: 0.8; */
+      /* mix-blend-mode: normal; */
+      box-shadow: 0 0 16px rgba(200, 120, 255, 0.35);
+    }
+
+    .piece.dragging {
+      opacity: 0.9;
+      mix-blend-mode: normal;
+      cursor: grabbing;
+      z-index: 100;
+    }
+
+    .piece.placed {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .piece img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      display: block;
+    }
+
+    /* מיקומים לפי הסקיצה:
+     ימין עליון (ראשון לגרירה)   — id=piece0
+     שמאל עליון                  — id=piece1  (לא קיים בסקיצה, זהו הגדול באמצע-ימין)
+     שמאל תחתון (שני לגרירה)     — id=piece2
+     ימין תחתון (רביעי לגרירה)   — id=piece3
+  */
+
+    /* לפי הסקיצה: שני בלוקים למעלה + שניים למטה */
+    /* למעלה שמאל — רחב */
+    #piece0 {
+      top: 6%;
+      right: 4%;
+      width: 38%;
+      height: 38%;
+    }
+
+    /* למעלה ימין — קצת קטן יותר */
+    #piece1 {
+      top: 6%;
+      right: 47%;
+      width: 30%;
+      height: 38%;
+    }
+
+    /* למטה שמאל */
+    #piece2 {
+      bottom: 6%;
+      right: 4%;
+      width: 22%;
+      height: 36%;
+    }
+
+    /* למטה ימין */
+    #piece3 {
+      bottom: 6%;
+      left: 4%;
+      width: 22%;
+      height: 36%;
+    }
+
+    /* ══ שורה תחתונה ══ */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    /* ══ מיקרוסקופ ══ */
+    .microscope {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(6, 2, 18, 0.7);
+    }
+
+    .micro-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.4;
+    }
+
+    .slots-grid {
+      position: relative;
+      z-index: 5;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 14px;
+      width: 100%;
+    }
+
+    .micro-slot {
+      width: 100%;
+      /* שינוי יחס הגובה-רוחב למלבני יותר */
+      aspect-ratio: 2 / 1;
+      border: 2px dashed rgba(160, 80, 255, 0.35);
+      border-radius: 10px;
+      background: rgba(20, 5, 50, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* שאר הקוד נשאר ללא שינוי */
+    .micro-slot.drag-over {
+      border-color: rgba(220, 120, 255, 0.9);
+      background: rgba(80, 20, 140, 0.5);
+      box-shadow: 0 0 20px rgba(160, 60, 255, 0.5);
+    }
+
+    .micro-slot.filled {
+      border-style: solid;
+      border-color: rgba(180, 100, 255, 0.7);
+    }
+
+    .micro-slot.wrong-order {
+      border-color: #ff4444;
+      animation: shakeSlot 0.4s;
+    }
+
+    @keyframes shakeSlot {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      25% {
+        transform: translateX(-6px)
+      }
+
+      75% {
+        transform: translateX(6px)
+      }
+    }
+
+    .micro-slot img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .slot-num {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255, 210, 0, 1), 0 0 50px rgba(255, 160, 0, 0.6);
+      background: rgba(8, 2, 20, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      border-radius: 8px;
+    }
+
+    .micro-slot.filled .slot-num {
+      opacity: 1;
+      animation: numPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes numPop {
+      from {
+        opacity: 0;
+        transform: scale(0.4);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* סדר נכון — הדגשה קטנה */
+    .order-hint {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(200, 140, 255, 0.6);
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    /* ══ ימין ══ */
+    .right-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .riddle-box {
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      border-radius: 14px;
+      padding: 18px 20px;
+      flex: 1;
+    }
+
+    .riddle-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: rgba(200, 140, 255, 0.7);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .riddle-text {
+      font-size: 13px;
+      color: #ecdeff;
+      line-height: 2.1;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .code-chest {
+      border: 1px solid rgba(150, 60, 255, 0.25);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chest-img {
+      height: 75px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .locks-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .lock-icon {
+      font-size: 22px;
+      filter: grayscale(1) brightness(0.45);
+      transition: all 0.5s;
+    }
+
+    .lock-icon.open {
+      filter: none;
+      text-shadow: 0 0 14px rgba(255, 210, 0, 0.9);
+    }
+
+    .code-input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .code-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: rgba(200, 140, 255, 0.7);
+      text-transform: uppercase;
+    }
+
+    .code-slots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .code-slot {
+      width: 42px;
+      height: 50px;
+      border: 2px solid rgba(150, 60, 255, 0.4);
+      border-radius: 10px;
+      background: rgba(20, 5, 45, 0.7);
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #d0a0ff;
+      text-align: center;
+      outline: none;
+      caret-color: #c084fc;
+      transition: all 0.2s;
+    }
+
+    .code-slot:focus {
+      border-color: rgba(200, 100, 255, 0.85);
+      background: rgba(60, 15, 110, 0.7);
+      box-shadow: 0 0 14px rgba(160, 60, 255, 0.4);
+    }
+
+    .check-btn {
+      background: linear-gradient(135deg, #7b2fff, #5a1fa8);
+      border: none;
+      border-radius: 50px;
+      padding: 10px 0;
+      width: 100%;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      letter-spacing: 2px;
+      box-shadow: 0 6px 20px rgba(123, 47, 255, 0.4);
+      transition: all 0.25s;
+    }
+
+    .check-btn:hover {
+      box-shadow: 0 8px 28px rgba(123, 47, 255, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .feedback {
+      font-size: 12px;
+      color: #ff6666;
+      min-height: 16px;
+      text-align: center;
+    }
+
+    .feedback.ok {
+      color: #00ff88;
+    }
+
+    #key-anim {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      pointer-events: none;
+    }
+
+    #key-anim.run {
+      display: block;
+    }
+
+    #flying-key {
+      position: absolute;
+      font-size: 80px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-shadow: 0 0 30px rgba(255, 210, 0, 0.8);
+    }
+
+    .win-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.82);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .win-overlay.show {
+      display: flex;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    .win-emoji {
+      font-size: 72px;
+      animation: floatKey 1.6s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatKey {
+      from {
+        transform: translateY(0) rotate(-8deg)
+      }
+
+      to {
+        transform: translateY(-14px) rotate(8deg)
+      }
+    }
+
+    .win-msg {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      color: #ffd700;
+      letter-spacing: 4px;
+      text-shadow: 0 0 30px rgba(255, 210, 0, 0.7);
+      text-align: center;
+    }
+
+    .win-btn {
+      margin-top: 8px;
+      background: linear-gradient(135deg, #7b2fff, #5a1fa8);
+      border: none;
+      border-radius: 50px;
+      padding: 13px 40px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(123, 47, 255, 0.5);
+      transition: all 0.2s;
+    }
+
+    .win-btn:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes lockPop {
+      0% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.5) rotate(-20deg)
+      }
+
+      100% {
+        transform: scale(1)
+      }
+    }
+
+    /* ══ גריד 3x3 חידה שנייה ══ */
+    .grid-section {
+      position: relative;
+      z-index: 10;
+      padding: 0 14px 14px;
+    }
+
+    .grid-section-label {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      color: rgba(200, 140, 255, 0.7);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 16px 0 10px;
+      border-top: 1px solid rgba(150, 60, 255, 0.2);
+    }
+
+    .symbol-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      width: 100%;
+      aspect-ratio: 1;
+      border: 1px solid rgba(150, 60, 255, 0.3);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .sym-cell {
+      border: 1px solid rgba(150, 60, 255, 0.2);
+      background: rgba(15, 5, 35, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s;
+    }
+
+    .sym-cell.center-cell {
+      cursor: pointer;
+      background: rgba(40, 10, 80, 0.8);
+    }
+
+    .sym-cell.center-cell:hover {
+      background: rgba(70, 20, 130, 0.9);
+      box-shadow: inset 0 0 20px rgba(160, 60, 255, 0.3);
+    }
+
+    .sym-cell.center-cell:active {
+      transform: scale(0.96);
+    }
+
+    .sym-cell img {
+      width: 60%;
+      height: 60%;
+      object-fit: contain;
+      opacity: 0;
+      transition: opacity 0.35s, transform 0.35s;
+      transform: scale(0.5);
+    }
+
+    .sym-cell.has-symbol img {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .sym-cell.has-symbol.distractor img {
+      opacity: 0.6;
+    }
+
+    /* כשה-1 שלם — הדגשה */
+    .sym-cell.number-complete img {
+      filter: drop-shadow(0 0 8px rgba(255, 210, 0, 0.8));
+    }
+
+    .click-counter {
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      color: rgba(180, 100, 255, 0.6);
+      letter-spacing: 2px;
+      margin-top: 10px;
+    }
+
+    .grid-hint {
+      text-align: center;
+      font-size: 12px;
+      color: rgba(200, 140, 255, 0.5);
+      letter-spacing: 1px;
+      margin-top: 6px;
+      min-height: 18px;
+    }
+
+    .grid-hint.reveal {
+      color: #ffd700;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="top-bar">
+    <h1>🗝️ &nbsp; המפתח הרביעי & המפתח החמישי</h1>
+  </div>
+
+  <div class="main-wrap">
+
+    <!-- חדר עם 4 חלקי פאזל ממוזגים -->
+    <div class="room-section" id="room-section">
+      <!-- ▼ תמונת החדר ▼ -->
+      <img class="room-bg" src="img/קיר תמונות..jpg.png" alt="חדר" onerror="this.style.opacity='0.15'">
+
+      <!-- סדר גרירה: piece0=ראשון, piece1=שני, piece2=שלישי, piece3=רביעי -->
+      <!-- piece0 = ימין עליון (ראשון) -->
+      <div class="piece" id="piece0" draggable="true" data-order="1">
+        <img src="img/המספר 7 חלק 2.jpg" alt="">
+      </div>
+      <!-- piece1 = שמאל עליון (שני) -->
+      <div class="piece" id="piece1" draggable="true" data-order="2">
+        <img src="img/המספר 7 חלק 4.jpg" alt="">
+      </div>
+      <!-- piece2 = שמאל תחתון שני משמאל (שלישי) -->
+      <div class="piece" id="piece2" draggable="true" data-order="0">
+        <img src="img/המספר 7 חלק 1.jpg" alt="">
+      </div>
+      <!-- piece3 = ימין תחתון שני מימין (רביעי) -->
+      <div class="piece" id="piece3" draggable="true" data-order="3">
+        <img src="img/המספר 7 חלק 3.jpg" alt="">
+      </div>
+    </div>
+
+    <div class="bottom-row">
+
+      <!-- מיקרוסקופ -->
+      <div>
+        <div class="microscope" id="microscope">
+          <img class="micro-bg" src="img/תמונה מספר 9.png" alt="סימן שאלה" width="100"
+            onerror="this.style.display='none'">
+          <div class="slots-grid">
+            <!-- slot 0 = מקבל ראשון -->
+            <div class="micro-slot" id="mslot0" data-accepts="0" data-num="3">
+              <div class="slot-num"></div>
+            </div>
+            <!-- slot 1 = מקבל שני -->
+            <div class="micro-slot" id="mslot1" data-accepts="1" data-num="7">
+              <div class="slot-num"></div>
+            </div>
+            <!-- slot 2 = מקבל שלישי -->
+            <div class="micro-slot" id="mslot2" data-accepts="2" data-num="1">
+              <div class="slot-num"></div>
+            </div>
+            <!-- slot 3 = מקבל רביעי -->
+            <div class="micro-slot" id="mslot3" data-accepts="3" data-num="9">
+              <div class="slot-num"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ימין -->
+      <div class="right-col">
+        <div class="riddle-box">
+          <div class="riddle-label">◆ חידה · מפתח רביעי ☆ חמישי</div>
+          <div class="riddle-text">
+            <!-- ▼ הכנס טקסט חידה ▼ -->
+             קחו אתכם את התמונות הם יקרות. <br>
+            1. תחתון ימין<br>
+            2. עליון ימין<br>
+            3. עליון שמאל<br>
+            4. תחתון שמאל<br>
+            <br>
+            <strong>ושימו לב ללחיצות!</strong>
+          </div>
+        </div>
+
+        <div class="code-chest">
+          <img class="chest-img" src="img/תמונה מספר 9.png" alt="" onerror="this.style.display='none'">
+          <div class="locks-row">
+            <div class="lock-icon open">🔓</div>
+            <div class="lock-icon open">🔓</div>
+            <div class="lock-icon open">🔓</div>
+            <div class="lock-icon" id="lock3">🔒</div>
+            <div class="lock-icon" id="lock4">🔒</div>
+          </div>
+          <div class="code-input-wrap">
+            <div class="code-label">◆ הקוד שלך</div>
+            <div class="code-slots" style="direction:ltr;">
+              <input class="code-slot" id="cs0" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-slot" id="cs1" type="text" maxlength="1" inputmode="numeric">
+              <input class="code-slot" id="cs2" type="text" maxlength="1" inputmode="numeric">
+            </div>
+            <button class="check-btn" onclick="checkCode()">◆ &nbsp; בדוק קוד</button>
+            <div class="feedback" id="fb"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ חידה שנייה: גריד 3x3 ══ -->
+  <div class="grid-section">
+    <div class="grid-section-label">◆ &nbsp; שלב שני — מצא את המספר &nbsp; ◆</div>
+    <div class="symbol-grid" id="symbol-grid">
+      <!-- 9 תאים, אמצעי = index 4 -->
+      <div class="sym-cell" id="gc0"><img src="img/סמל דופליקטים.png" alt="◆"></div>
+      <div class="sym-cell" id="gc1"><img src="img/סמל דופליקטים.png" alt="◆"></div>
+      <div class="sym-cell" id="gc2"><img src="img/סמל דופליקטים.png" alt="◆"></div>
+      <div class="sym-cell" id="gc3"><img src="img/סמל דופליקטים.png" alt="◆"></div>
+      <div class="sym-cell center-cell" id="gc4" onclick="gridClick()"><img src="img/סמל דופליקטים.png" alt="◆"></div>
+      <div class="sym-cell" id="gc5"><img src="img/סמל דופליקטים.png" alt="◆"></div>
+      <div class="sym-cell" id="gc6"><img src="img/סמל דופליקטים.png" alt="◆"></div>
+      <div class="sym-cell" id="gc7"><img src="img/סמל דופליקטים.png" alt="◆"></div>
+      <div class="sym-cell" id="gc8"><img src="img/סמל דופליקטים.png" alt="◆"></div>
+    </div>
+    <div class="grid-hint" id="grid-hint"></div>
+  </div>
+
+  <div id="key-anim">
+    <div id="flying-key">🗝️</div>
+  </div>
+  <div class="win-overlay" id="win-overlay">
+    <div class="win-emoji">🗝️</div>
+    <div class="win-msg">מצאתם את המפתחות הרביעי והחמישי!</div>
+    <a href="חדר אוצרות2.html"><button class="win-btn" onclick="goNext()">המשיכו לחידה הבאה ◆</button></a>
+  </div>
+
+  <audio id="background-music" controls>
+    <source src="מוזיקת רקע/מנגינה מספר 8.mp3" type="audio/mpeg">
+    הדפדפן שלך אינו תומך בהשמעת אודיו.
+  </audio>
+
+  <script>
+    const _ck = btoa(unescape(encodeURIComponent('718'))); // ▼ שנה XX לשתי הספרות הנוספות
+    const CORRECT = decodeURIComponent(escape(atob(_ck)));
+
+    let dragged = null;
+    let nextExpected = 0; // הסדר הבא הצפוי (0,1,2,3)
+
+    document.querySelectorAll('.piece').forEach(p => {
+      p.addEventListener('dragstart', e => {
+        dragged = p;
+        p.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+      p.addEventListener('dragend', () => p.classList.remove('dragging'));
+    });
+
+    document.querySelectorAll('.micro-slot').forEach((slot, si) => {
+      slot.addEventListener('dragover', e => {
+        e.preventDefault();
+        if (!slot.classList.contains('filled')) slot.classList.add('drag-over');
+      });
+      slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+      slot.addEventListener('drop', e => {
+        e.preventDefault();
+        slot.classList.remove('drag-over');
+        if (slot.classList.contains('filled') || !dragged) return;
+
+        const pieceOrder = parseInt(dragged.dataset.order);
+        const slotAccepts = parseInt(slot.dataset.accepts);
+
+        // בדוק סדר נכון
+        if (pieceOrder !== nextExpected || slotAccepts !== nextExpected) {
+          // סדר שגוי
+          slot.classList.add('wrong-order');
+          setTimeout(() => slot.classList.remove('wrong-order'), 500);
+          document.getElementById('fb').textContent = '✗ סדר שגוי! נסה לפי הסדר הנכון.';
+          document.getElementById('fb').className = 'feedback';
+          setTimeout(() => { document.getElementById('fb').textContent = ''; }, 1500);
+          dragged = null;
+          return;
+        }
+
+        // נכון — הכנס
+        const imgEl = dragged.querySelector('img');
+        const clone = document.createElement('img');
+        clone.src = imgEl.src;
+        slot.appendChild(clone);
+
+        const num = slot.dataset.num;
+        slot.querySelector('.slot-num').textContent = num;
+        slot.classList.add('filled');
+
+        dragged.classList.add('placed');
+        dragged = null;
+        nextExpected++;
+      });
+    });
+
+    [0, 1, 2].forEach(i => {
+      const inp = document.getElementById('cs' + i);
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/[^0-9]/g, '').slice(-1);
+        if (inp.value && i < 2) document.getElementById('cs' + (i + 1)).focus();
+      });
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !inp.value && i > 0) document.getElementById('cs' + (i - 1)).focus();
+        if (e.key === 'Enter') checkCode();
+      });
+    });
+
+    function checkCode() {
+      const fb = document.getElementById('fb');
+      const entered = [0, 1, 2].map(i => document.getElementById('cs' + i).value).join('');
+      if (entered.length < 3) { fb.textContent = '✗ הכנס 3 ספרות'; fb.className = 'feedback'; return; }
+      if (entered === CORRECT) {
+        fb.textContent = '✓ קוד נכון!'; fb.className = 'feedback ok';
+        animateKey();
+      } else {
+        fb.textContent = '✗ קוד שגוי, נסה שוב'; fb.className = 'feedback';
+        setTimeout(() => {
+          [0, 1, 2].forEach(i => document.getElementById('cs' + i).value = '');
+          document.getElementById('cs0').focus();
+          fb.textContent = '';
+        }, 900);
+      }
+    }
+
+    function animateKey() {
+      const lock = document.getElementById('lock3');
+      const lr = lock.getBoundingClientRect();
+      const tx = lr.left + lr.width / 2 - window.innerWidth / 2;
+      const ty = lr.top + lr.height / 2 - window.innerHeight / 2;
+      const st = document.createElement('style');
+      st.textContent = `@keyframes kf4{0%{top:50%;left:50%;transform:translate(-50%,-50%) scale(1);opacity:1;}55%{transform:translate(-50%,-50%) scale(1.4);opacity:1;}100%{top:calc(50% + ${ty}px);left:calc(50% + ${tx}px);transform:translate(-50%,-50%) scale(0.3);opacity:0;}}`;
+      document.head.appendChild(st);
+      const ka = document.getElementById('key-anim');
+      const fk = document.getElementById('flying-key');
+      fk.style.animation = 'none'; ka.classList.add('run');
+      fk.style.animation = 'kf4 1.5s cubic-bezier(0.4,0,0.2,1) forwards';
+      setTimeout(() => {
+        ka.classList.remove('run');
+        // פתח שני מנעולים
+        const l3 = document.getElementById('lock3');
+        const l4 = document.getElementById('lock4');
+        l3.classList.add('open'); l3.textContent = '🔓'; l3.style.animation = 'lockPop 0.5s ease';
+        setTimeout(() => {
+          l4.classList.add('open'); l4.textContent = '🔓'; l4.style.animation = 'lockPop 0.5s ease';
+          setTimeout(() => document.getElementById('win-overlay').classList.add('show'), 500);
+        }, 400);
+      }, 1500);
+    }
+
+
+    // ══ גריד 3x3 ══
+    // המספר 1 = תאים: 1(עליון אמצע), 4(אמצע), 3(אמצע שמאל), 7(תחתון אמצע)
+    // לפי: שלושת האמצעיים (1,4,7) + שמאל שורה אמצעית (3)
+    const ONE_CELLS = [0, 1, 3, 6]; // עליון שמאל + עליון אמצע + שמאל אמצע + שמאל תחתון
+    const TOTAL_CLICKS = 8; // מספר לחיצות לחשוף את ה-1
+
+    // לכל לחיצה — אילו תאים מדיחי דעת מוצגים (אינדקסים)
+    // ולאחר TOTAL_CLICKS כל תאי ה-1 מוצגים
+    const CLICK_SEQUENCE = [
+      [2],     // לחיצה 1 — מסיח: ימין עליון
+      [0],     // לחיצה 2 — שמאל עליון
+      [5],     // לחיצה 3 — מסיח: ימין אמצע
+      [1],     // לחיצה 4 — עליון אמצע
+      [8],     // לחיצה 5 — מסיח: ימין תחתון
+      [3],     // לחיצה 6 — שמאל אמצע
+      [7],     // לחיצה 7 — מסיח: תחתון אמצע
+      [6],     // לחיצה 8 — שמאל תחתון → שלם!
+    ];
+
+    let clickCount = 0;
+    let gridDone = false;
+
+    function gridClick() {
+      if (gridDone) return;
+      clickCount++;
+
+      const seq = CLICK_SEQUENCE[clickCount - 1];
+      if (seq) {
+        seq.forEach(idx => {
+          const cell = document.getElementById('gc' + idx);
+          const isOne = ONE_CELLS.includes(idx);
+          cell.classList.add('has-symbol');
+          if (!isOne) cell.classList.add('distractor');
+        });
+      }
+
+      document.getElementById('click-counter').textContent =
+        'לחיצה ' + clickCount + ' מתוך ' + TOTAL_CLICKS;
+
+      if (clickCount >= TOTAL_CLICKS) {
+        gridDone = true;
+        // ודא שכל תאי ה-1 מוצגים
+        ONE_CELLS.forEach(idx => {
+          const cell = document.getElementById('gc' + idx);
+          cell.classList.add('has-symbol');
+          cell.classList.remove('distractor');
+          cell.classList.add('number-complete');
+        });
+
+        // הדגש מספר לחיצות = הספרה השנייה
+        setTimeout(() => {
+          const hint = document.getElementById('grid-hint');
+          hint.textContent = '✓';
+          hint.classList.add('reveal');
+
+          // הסמן לאן להכניס
+          const s1 = document.getElementById('cs1');
+          if (s1) s1.focus();
+        }, 600);
+      }
+    }
+
+    function goNext() { window.location.href = 'duplicates_puzzle5.html'; }
+  </script>
+</body>
+
+</html>
